@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (session.params.length === 0) {
             const msg = document.createElement('p');
-            msg.textContent = 'No arguments required.';
+            msg.textContent = '引数は不要です。';
             msg.style.color = '#94a3b8';
             dynamicInputs.appendChild(msg);
         }
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const path = folderInput.value.trim();
         if (!path) return;
 
-        folderStatus.textContent = 'Scanning...';
+        folderStatus.textContent = 'スキャン中...';
         folderStatus.className = 'status-text';
 
         try {
@@ -211,17 +211,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
 
             if (data.found) {
-                folderStatus.textContent = '✓ Valid BatchRunner Project found';
+                folderStatus.textContent = '✓ 有効なプロジェクトが見つかりました';
                 folderStatus.className = 'status-text success';
 
                 createSession(path, data);
 
             } else {
-                folderStatus.textContent = '❌ No webrunner.sh found in directory';
+                folderStatus.textContent = '❌ ディレクトリ内に webrunner.sh が見つかりません';
                 folderStatus.className = 'status-text error';
             }
         } catch (e) {
-            folderStatus.textContent = '❌ Error connecting to server';
+            folderStatus.textContent = '❌ サーバー接続エラー';
             folderStatus.className = 'status-text error';
             console.error(e);
         }
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const els = session.elements;
         els.logSection.classList.remove('hidden');
         els.logContent.textContent = '';
-        els.statusBadge.textContent = 'Requesting execution...';
+        els.statusBadge.textContent = '実行要求中...';
         els.statusBadge.className = 'connection-status badge';
 
         try {
@@ -260,11 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
-            els.statusBadge.textContent = 'Starting stream...';
+            els.statusBadge.textContent = 'ログ受信開始...';
             startPolling(session);
 
         } catch (e) {
-            alert('Failed to start execution: ' + e.message);
+            alert('実行開始に失敗しました: ' + e.message);
         }
     });
 
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!sessions[session.id]) return;
 
                 if (logData.error) {
-                    els.statusBadge.textContent = 'Error reading log';
+                    els.statusBadge.textContent = 'ログ読み込みエラー';
                     els.statusBadge.style.background = '#ef4444';
                     return;
                 }
@@ -305,24 +305,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     els.logContainer.scrollTop = els.logContainer.scrollHeight;
 
                     if (logData.content.includes('SUCCESS')) {
-                        els.statusBadge.textContent = 'Completed (Success)';
+                        els.statusBadge.textContent = '完了 (成功)';
                         els.statusBadge.style.background = '#22c55e';
                         stopPolling(session);
-                        sendNotification('Batch Completed', `${session.path} finished.`, 'success');
+                        sendNotification('バッチ処理完了', `${session.path} が終了しました。`, 'success');
                     } else if (logData.content.includes('FAILURE') || logData.content.includes('ERROR')) {
-                        els.statusBadge.textContent = 'Failed';
+                        els.statusBadge.textContent = '失敗';
                         els.statusBadge.style.background = '#ef4444';
                         stopPolling(session);
-                        sendNotification('Batch Failed', `${session.path} failed.`, 'error');
+                        sendNotification('バッチ処理失敗', `${session.path} でエラーが発生しました。`, 'error');
                     }
                 }
 
                 // Heartbeat
                 const txt = els.statusBadge.textContent;
-                if (txt.startsWith('Live')) {
-                    els.statusBadge.textContent = txt.includes('.') ? 'Live' : 'Live .';
-                } else if (!txt.includes('Completed') && !txt.includes('Failed')) {
-                    els.statusBadge.textContent = 'Live';
+                if (txt.startsWith('実行中')) {
+                    els.statusBadge.textContent = txt.includes('.') ? '実行中' : '実行中 .';
+                } else if (!txt.includes('完了') && !txt.includes('失敗')) {
+                    els.statusBadge.textContent = '実行中';
                     els.statusBadge.style.background = '#22c55e';
                     els.statusBadge.style.color = '#000';
                 }
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function loadDirectory(path) {
-        browserList.innerHTML = '<div style="padding:1rem; color:#94a3b8">Loading...</div>';
+        browserList.innerHTML = '<div style="padding:1rem; color:#94a3b8">読み込み中...</div>';
         try {
             const res = await fetch(`api.php?action=list&path=${encodeURIComponent(path)}`);
             const data = await res.json();
@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             browserList.innerHTML = '';
 
             if (data.items.length === 0) {
-                browserList.innerHTML = '<div style="padding:1rem; color:#94a3b8">Empty directory</div>';
+                browserList.innerHTML = '<div style="padding:1rem; color:#94a3b8">空のディレクトリ</div>';
                 return;
             }
 
@@ -408,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (e) {
             console.error(e);
-            browserList.innerHTML = '<div style="padding:1rem; color:#ef4444">Error loading directory</div>';
+            browserList.innerHTML = '<div style="padding:1rem; color:#ef4444">ディレクトリ読み込みエラー</div>';
         }
     }
 
