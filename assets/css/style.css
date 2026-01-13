@@ -209,3 +209,56 @@ select:focus {
     font-size: 0.75rem;
     font-weight: 600;
 }
+
+/* File Browser Styles */
+.browser-modal {
+    max-width: 600px;
+}
+
+.browser-nav {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.browser-nav input {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.browser-list {
+    height: 300px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+
+.browser-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    color: var(--text-primary);
+    transition: background 0.2s;
+}
+
+.browser-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.browser-item .icon {
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+}
+
+.browser-item.has-runner .icon {
+    color: var(--success);
+}
+
+.btn.sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}

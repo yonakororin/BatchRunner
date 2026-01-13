@@ -52,6 +52,38 @@ if ($action === 'scan') {
     exit;
 }
 
+if ($action === 'list') {
+    $currentPath = $path ? rtrim($path, '/') : getcwd();
+    
+    if (!is_dir($currentPath)) {
+        $currentPath = getcwd();
+    }
+
+    $directories = [];
+    $items = scandir($currentPath);
+    
+    foreach ($items as $item) {
+        if ($item === '.' || $item === '..') continue;
+        
+        $fullPath = $currentPath . '/' . $item;
+        if (is_dir($fullPath)) {
+            $hasRunner = file_exists($fullPath . '/webrunner.sh');
+            $directories[] = [
+                'name' => $item,
+                'path' => $fullPath,
+                'hasRunner' => $hasRunner
+            ];
+        }
+    }
+
+    echo json_encode([
+        'current' => $currentPath,
+        'parent' => dirname($currentPath),
+        'items' => array_values($directories)
+    ]);
+    exit;
+}
+
 if ($action === 'run') {
     $data = json_decode(file_get_contents('php://input'), true);
     $args = $data['args'] ?? [];

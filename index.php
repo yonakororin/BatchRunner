@@ -22,6 +22,9 @@
                     <label for="folder-path">Target Directory</label>
                     <div class="input-wrapper">
                         <input type="text" id="folder-path" placeholder="/path/to/project" value="/mnt/c/Projects/BatchRunner/demo">
+                        <button id="browse-btn" class="btn secondary">
+                            <span class="icon">📂</span> Browse
+                        </button>
                         <button id="check-folder-btn" class="btn primary">
                             <span class="icon">🔍</span> Verify
                         </button>
@@ -59,7 +62,30 @@
         </main>
     </div>
 
-    <!-- Modal Dialog -->
+    <!-- File Browser Modal -->
+    <div id="browser-dialog" class="modal-overlay hidden">
+        <div class="modal glass-panel browser-modal">
+            <div class="modal-header">
+                <h2>Select Folder</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="browser-nav">
+                    <button id="browser-up-btn" class="btn secondary sm">⬆ Up</button>
+                    <input type="text" id="browser-current-path" readonly>
+                </div>
+                <div id="browser-list" class="browser-list">
+                    <!-- Items injected here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="close-modal btn secondary">Cancel</button>
+                <button id="browser-select-btn" class="btn primary">Select This Folder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Run Dialog -->
     <div id="run-dialog" class="modal-overlay hidden">
         <div class="modal glass-panel">
             <div class="modal-header">

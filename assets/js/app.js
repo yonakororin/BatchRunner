@@ -221,4 +221,83 @@ document.addEventListener('DOMContentLoaded', () => {
     if ("Notification" in window && Notification.permission !== "denied") {
         Notification.requestPermission();
     }
+
+    // --- File Browser Logic ---
+    const browseBtn = document.getElementById('browse-btn');
+    const browserDialog = document.getElementById('browser-dialog');
+    const browserList = document.getElementById('browser-list');
+    const browserCurrentPath = document.getElementById('browser-current-path');
+    const browserUpBtn = document.getElementById('browser-up-btn');
+    const browserSelectBtn = document.getElementById('browser-select-btn');
+    let browserPath = '';
+
+    browseBtn.addEventListener('click', () => {
+        const currentVal = folderInput.value.trim();
+        browserPath = currentVal || '/'; // Default start
+        loadDirectory(browserPath);
+        browserDialog.classList.remove('hidden');
+    });
+
+    browserUpBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Go to parent handled by API response usually, 
+        // but we can just use cached parent or calculate simple string
+        // Actually loadDirectory uses API's response for parent, 
+        // but here we might request current path's parent.
+        // Let's use the 'parent' field from last response if available, or string manipulation.
+        // For now, simpler to refetch '..' relative or trust last API response.
+        // Let's use API response data stored in a variable if we want robust, 
+        // or just rely on API 'list' handling '..' if we passed it? 
+        // No, list takes absolute path.
+        // Let's use the parent path stored in DOM or var.
+        if (lastBrowserData && lastBrowserData.parent) {
+            loadDirectory(lastBrowserData.parent);
+        }
+    });
+
+    browserSelectBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        folderInput.value = browserCurrentPath.value;
+        browserDialog.classList.add('hidden');
+        // Trigger verify automatically
+        verifyBtn.click();
+    });
+
+    let lastBrowserData = null;
+
+    async function loadDirectory(path) {
+        browserList.innerHTML = '<div style="padding:1rem; color:#94a3b8">Loading...</div>';
+        try {
+            const res = await fetch(`api.php?action=list&path=${encodeURIComponent(path)}`);
+            const data = await res.json();
+            lastBrowserData = data;
+
+            browserCurrentPath.value = data.current;
+            browserList.innerHTML = '';
+
+            if (data.items.length === 0) {
+                browserList.innerHTML = '<div style="padding:1rem; color:#94a3b8">Empty directory</div>';
+                return;
+            }
+
+            data.items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `browser-item ${item.hasRunner ? 'has-runner' : ''}`;
+                div.innerHTML = `<span class="icon">📁</span> ${item.name}`;
+                if (item.hasRunner) {
+                    div.innerHTML += ' <span style="margin-left:auto; font-size:0.8rem; color:#22c55e">webrunner.sh</span>';
+                }
+
+                div.addEventListener('click', () => {
+                    loadDirectory(item.path);
+                });
+
+                browserList.appendChild(div);
+            });
+
+        } catch (e) {
+            console.error(e);
+            browserList.innerHTML = '<div style="padding:1rem; color:#ef4444">Error loading directory</div>';
+        }
+    }
 });
